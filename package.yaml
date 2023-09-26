@@ -1,0 +1,36 @@
+name:                budget
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/githubuser/budget#readme
+license:             BSD3
+author:              Author name here
+maintainer:          example@example.com
+copyright:           2023 Author name here
+category:            Web
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+language: GHC2021
+
+dependencies:
+  - base >= 4.7 && < 5
+  - blaze-html
+  - scotty
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+executables:
+  budget:
+    source-dirs:      src
+    main:             Main.hs
