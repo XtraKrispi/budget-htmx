@@ -13,11 +13,22 @@ extra-source-files:
 - CHANGELOG.md
 
 language: GHC2021
-
+default-extensions: OverloadedStrings, BlockArguments, OverloadedRecordDot
 dependencies:
   - base >= 4.7 && < 5
   - blaze-html
   - scotty
+  - persistent
+  - persistent-postgresql
+  - time
+  - text
+  - monad-logger
+  - transformers
+  - unliftio-core
+  - mtl
+  - bytestring
+  - wai
+  - wai-middleware-static
 
 ghc-options:
 - -Wall
@@ -25,7 +36,6 @@ ghc-options:
 - -Widentities
 - -Wincomplete-record-updates
 - -Wincomplete-uni-patterns
-- -Wmissing-export-lists
 - -Wmissing-home-modules
 - -Wpartial-fields
 - -Wredundant-constraints
