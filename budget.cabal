@@ -21,12 +21,17 @@ extra-source-files:
 executable budget
   main-is: Main.hs
   other-modules:
-      App
+      AppM
+      BusinessLogic
       Capability
       DataAccess
       Database
+      Html.FullPage.Entries
       Html.FullPage.Home
+      Html.Layout
       Html.Partials.Entries
+      Html.Utils
+      Route
       Types
       Paths_budget
   hs-source-dirs:
