@@ -26,11 +26,14 @@ executable budget
       Capability
       DataAccess
       Database
+      Html.Components
+      Html.FullPage.Archive
       Html.FullPage.Entries
       Html.FullPage.Home
       Html.Layout
       Html.Partials.Entries
       Html.Utils
+      Htmx.Attributes
       Route
       Types
       Paths_budget
@@ -42,6 +45,7 @@ executable budget
   build-depends:
       base >=4.7 && <5
     , blaze-html
+    , blaze-svg
     , bytestring
     , monad-logger
     , mtl

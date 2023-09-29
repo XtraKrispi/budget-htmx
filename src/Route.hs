@@ -1,11 +1,22 @@
-module Route where
+module Route (Route (..), PartialRoute (..), partialRouteToPath, routeToPath) where
 
 import Data.String (IsString)
 
-data Route = Home | Entries | Archive
-  deriving (Show, Eq, Enum, Bounded)
+data PartialRoute = EntriesP
+  deriving (Eq, Enum, Bounded)
+
+data Route = HomeR | EntriesR | ArchiveR
+  deriving (Eq, Enum, Bounded)
+
+instance Show Route where
+  show HomeR = "Home"
+  show EntriesR = "Entries"
+  show ArchiveR = "Archive"
 
 routeToPath :: (IsString s) => Route -> s
-routeToPath Home = "/"
-routeToPath Entries = "/entries"
-routeToPath Archive = "/archive"
+routeToPath HomeR = "/"
+routeToPath EntriesR = "/entries"
+routeToPath ArchiveR = "/archive"
+
+partialRouteToPath :: (IsString s) => PartialRoute -> s
+partialRouteToPath EntriesP = "/partial/entries"

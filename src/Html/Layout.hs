@@ -10,7 +10,15 @@ import Text.Blaze.Html5.Attributes qualified as Attr
 navbar :: Route -> Html
 navbar activeRoute =
   let menuItem route =
-        Html.li $ Html.a ! Attr.href (routeToPath route) ! Utils.classes (["text-blue-700" | route == activeRoute]) $ Html.text (T.pack $ show route)
+        Html.li
+          $ Html.a
+          ! Attr.href (routeToPath route)
+          ! Html.customAttribute "hx-boost" "true"
+          ! Utils.classesPred
+            [ ("lowercase", True)
+            , ("text-blue-500", activeRoute == route)
+            ]
+          $ Html.text (T.pack $ show route)
    in Html.nav
         ! Utils.classes
           [ "bg-white"
@@ -19,7 +27,7 @@ navbar activeRoute =
         $ do
           Html.div
             ! Utils.classes
-              [ "max-w-screen-xl"
+              [ "container"
               , "flex"
               , "flex-wrap"
               , "items-center"
@@ -33,11 +41,11 @@ navbar activeRoute =
                 $ Html.span
                 ! Utils.classes
                   [ "self-center"
-                  , "text-2xl"
+                  , "text-4xl"
                   , "font-semibold"
                   , "whitespace-nowrap"
                   ]
-                $ Html.text "Budget"
+                $ Html.text "budgit$"
               Html.div
                 $ Html.ul
                 ! Utils.classes
@@ -47,7 +55,7 @@ navbar activeRoute =
                   , "space-x-2"
                   ]
                 $ do
-                  mapM_ menuItem [Home .. Archive]
+                  mapM_ menuItem [HomeR .. ArchiveR]
 
 withLayout :: Route -> Html -> Html
 withLayout activeRoute content = Html.docTypeHtml do
@@ -56,5 +64,7 @@ withLayout activeRoute content = Html.docTypeHtml do
     Html.link ! Attr.rel "stylesheet" ! Attr.href "/app.css"
   Html.body do
     navbar activeRoute
-    Html.div do
+    Html.div ! Utils.classes ["container"] $ do
       content
+
+    Html.script ! Attr.src "https://unpkg.com/htmx.org@1.9.6" $ mempty

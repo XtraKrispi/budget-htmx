@@ -6,3 +6,6 @@ import Text.Blaze.Html5.Attributes qualified as Attr
 
 classes :: [AttributeValue] -> Attribute
 classes = Attr.class_ . mconcat . intersperse " "
+
+classesPred :: [(AttributeValue, Bool)] -> Attribute
+classesPred = classes . fmap fst . filter snd

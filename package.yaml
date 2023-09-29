@@ -29,6 +29,7 @@ dependencies:
   - bytestring
   - wai
   - wai-middleware-static
+  - blaze-svg
 
 ghc-options:
 - -Wall

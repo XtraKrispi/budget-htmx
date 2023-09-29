@@ -9,22 +9,30 @@ import Data.Text.Internal.Lazy (Text)
 import DataAccess (runDbAction)
 import Database (migrateAll)
 import Database.Persist.Postgresql (runMigration)
+import Html.FullPage.Archive qualified as Archive
 import Html.FullPage.Entries qualified as Entries
 import Html.FullPage.Home qualified as Home
 import Html.Partials.Entries qualified as Partial.Entries
 import Network.Wai.Middleware.Static (addBase, staticPolicy)
-import Route (Route (..))
 import System.Environment (lookupEnv)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Types (Env (..))
 import Web.Scotty.Trans (ScottyT, get, html, middleware, scottyT)
 
-scottyApp :: ScottyT Text AppM ()
-scottyApp = do
+webApp :: ScottyT Text AppM ()
+webApp = fullPages <> partials
+
+fullPages :: ScottyT Text AppM ()
+fullPages = do
   get "/" do
-    html $ renderHtml $ Home.render Home
+    html $ renderHtml Home.render
   get "/entries" do
-    html $ renderHtml $ Entries.render Entries
+    html $ renderHtml Entries.render
+  get "/archive" do
+    html $ renderHtml Archive.render
+
+partials :: ScottyT Text AppM ()
+partials = do
   get "/partial/entries" do
     entries <- lift getEntries
     html $ renderHtml $ Partial.Entries.render entries
@@ -40,4 +48,4 @@ main = do
     env
   scottyT 8080 (flip runReaderT env . unApp) do
     middleware $ staticPolicy (addBase "static")
-    scottyApp
+    webApp
