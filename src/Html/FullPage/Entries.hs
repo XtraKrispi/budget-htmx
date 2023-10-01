@@ -2,6 +2,7 @@ module Html.FullPage.Entries where
 
 import Html.Components (spinner)
 import Html.Layout qualified as Layout
+import Html.Partials.Entries qualified as Partial
 import Html.Utils qualified as Utils
 import Htmx.Attributes qualified as Htmx
 import Route (PartialRoute (..), Route (EntriesR), partialRouteToPath)
@@ -17,14 +18,35 @@ render = Layout.withLayout EntriesR do
       , "font-bold"
       ]
     $ "Entries"
-  Html.div $ do
-    "New Entry Section"
-    Html.form mempty
-
   Html.div
-    ! Htmx.hxGet (partialRouteToPath EntriesP)
-    ! Htmx.hxTrigger "load"
+    ! Utils.classes
+      [ "flex"
+      , "justify-between"
+      ]
     $ do
       Html.div
-        ! Attr.class_ "hx-indicator"
-        $ spinner
+        ! Utils.classes ["w-[45%]"]
+        ! Htmx.hxGet (partialRouteToPath EntriesP)
+        ! Htmx.hxTarget "#entries"
+        ! Htmx.hxTrigger "load"
+        $ do
+          Html.div
+            ! Attr.id "entries"
+            $ Html.div
+            ! Attr.class_ "hx-indicator"
+            $ spinner
+      Html.div
+        ! Utils.classes
+          [ "w-[45%]"
+          , "flex"
+          , "flex-col"
+          , "space-y-4"
+          , "p-4"
+          , "border"
+          , "border-gray-200"
+          , "rounded-md"
+          , "shadow-md"
+          ]
+        $ do
+          Html.div "New Entry"
+          Partial.newEntryForm

@@ -27,6 +27,9 @@ executable budget
       DataAccess
       Database
       Html.Components
+      Html.Form
+      Html.Form.Rendering
+      Html.Form.Types
       Html.FullPage.Archive
       Html.FullPage.Entries
       Html.FullPage.Home

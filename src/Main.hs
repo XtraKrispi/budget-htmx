@@ -2,13 +2,14 @@ module Main (main) where
 
 import AppM (AppM (unApp))
 import Capability (GetEntry (getEntries))
-import Control.Monad.Trans (lift)
+import Control.Monad.Trans (MonadIO (..), lift)
 import Control.Monad.Trans.Reader (ReaderT (runReaderT))
 import Data.ByteString.Char8 qualified as BS
 import Data.Text.Internal.Lazy (Text)
+import Data.Time (Day, defaultTimeLocale, parseTimeM)
 import DataAccess (runDbAction)
-import Database (migrateAll)
-import Database.Persist.Postgresql (runMigration)
+import Database (Entry (..), migrateAll)
+import Database.Persist.Postgresql (PersistStoreWrite (insert), runMigration)
 import Html.FullPage.Archive qualified as Archive
 import Html.FullPage.Entries qualified as Entries
 import Html.FullPage.Home qualified as Home
@@ -17,7 +18,15 @@ import Network.Wai.Middleware.Static (addBase, staticPolicy)
 import System.Environment (lookupEnv)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Types (Env (..))
-import Web.Scotty.Trans (ScottyT, get, html, middleware, scottyT)
+import Web.Scotty.Trans (
+  ScottyT,
+  get,
+  html,
+  middleware,
+  param,
+  post,
+  scottyT,
+ )
 
 webApp :: ScottyT Text AppM ()
 webApp = fullPages <> partials
@@ -36,6 +45,23 @@ partials = do
   get "/partial/entries" do
     entries <- lift getEntries
     html $ renderHtml $ Partial.Entries.render entries
+  post "/partial/entries" do
+    liftIO $ putStrLn "Here!"
+    description <- param "new-description"
+    amount <- param "new-amount"
+    frequency <- param "new-frequency"
+    entryType <- param "new-entry-type"
+    startDate :: Maybe Day <- parseTimeM True defaultTimeLocale "%Y-%-m-%-d" <$> param "new-start-date"
+    -- Need to do validation for all params
+    case startDate of
+      Nothing -> pure ()
+      Just d -> do
+        let newEntry = Entry description amount d frequency entryType False
+        _ <- lift $ runDbAction $ insert newEntry
+        pure ()
+    entries <- lift getEntries
+    -- Want to do an out of band swap here for the entries list
+    html $ renderHtml Partial.Entries.newEntryForm <> renderHtml (Partial.Entries.render entries)
 
 main :: IO ()
 main = do
