@@ -8,6 +8,9 @@ hxGet = customAttribute "hx-get"
 hxPost :: AttributeValue -> Attribute
 hxPost = customAttribute "hx-post"
 
+hxDelete :: AttributeValue -> Attribute
+hxDelete = customAttribute "hx-delete"
+
 hxSwap :: AttributeValue -> Attribute
 hxSwap = customAttribute "hx-swap"
 

@@ -44,7 +44,7 @@ frequencyDisplay BiWeekly = "Bi-Weekly"
 frequencyDisplay Monthly = "Monthly"
 
 data EntryType = Payday | Expense
-  deriving (Show, Read)
+  deriving (Show, Read, Eq)
 
 derivePersistField "EntryType"
 

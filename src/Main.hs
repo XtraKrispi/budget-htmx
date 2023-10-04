@@ -20,6 +20,7 @@ import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Types (Env (..))
 import Web.Scotty.Trans (
   ScottyT,
+  delete,
   get,
   html,
   middleware,
@@ -45,6 +46,9 @@ partials = do
   get "/partial/entries" do
     entries <- lift getEntries
     html $ renderHtml $ Partial.Entries.render entries
+  delete "/partial/entries/:id" do
+    entries <- lift getEntries
+    html $ renderHtml $ Partial.Entries.render entries
   post "/partial/entries" do
     liftIO $ putStrLn "Here!"
     description <- param "new-description"
@@ -61,7 +65,7 @@ partials = do
         pure ()
     entries <- lift getEntries
     -- Want to do an out of band swap here for the entries list
-    html $ renderHtml Partial.Entries.newEntryForm <> renderHtml (Partial.Entries.render entries)
+    html $ renderHtml (Partial.Entries.entryForm Nothing) <> renderHtml (Partial.Entries.render entries)
 
 main :: IO ()
 main = do

@@ -30,6 +30,7 @@ dependencies:
   - wai
   - wai-middleware-static
   - blaze-svg
+  - format-numbers
 
 ghc-options:
 - -Wall

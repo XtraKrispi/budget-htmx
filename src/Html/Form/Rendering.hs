@@ -38,6 +38,7 @@ renderFormField (Input formInput) =
         !? (isJust formInput.formInputId, Attr.id $ fromMaybe "" formInput.formInputId)
         !? (formInput.formInputIsReadonly, Attr.readonly "readonly")
         !? (formInput.formInputIsRequired, Attr.required "required")
+        !? (isJust formInput.formInputValue, Attr.value $ fromMaybe "" formInput.formInputValue)
         ! Attr.placeholder ""
         ! Utils.classes
           [ "block"
@@ -57,7 +58,7 @@ renderFormField (Input formInput) =
           , "peer"
           ]
       Html.label
-        !? (isJust formInput.formInputName, Attr.for $ fromMaybe "" formInput.formInputName)
+        !? (isJust formInput.formInputId, Attr.for $ fromMaybe "" formInput.formInputId)
         ! Utils.classes
           [ "peer-focus:font-medium"
           , "absolute"
@@ -82,7 +83,7 @@ renderFormField (Select s) =
   Html.div
     $ do
       Html.label
-        !? (isJust s.formSelectName, Attr.for $ fromMaybe "" s.formSelectName)
+        !? (isJust s.formSelectId, Attr.for $ fromMaybe "" s.formSelectId)
         ! Utils.classes
           [ "block"
           , "mb-2"
@@ -106,16 +107,15 @@ renderFormField (Select s) =
           , "w-full"
           , "p-2.5"
           ]
-        $ mconcat ((\o -> Html.option ! Attr.value o.formSelectOptionValue $ o.formSelectOptionText) <$> s.formSelectOptions)
-{-
-<label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select your country</label>
-<select id="countries" class=" dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-  <option>United States</option>
-  <option>Canada</option>
-  <option>France</option>
-  <option>Germany</option>
-</select>
--}
+        $ mconcat
+          ( ( \o ->
+                Html.option
+                  ! Attr.value o.formSelectOptionValue
+                  !? (o.formSelectOptionSelected, Attr.selected "selected")
+                  $ o.formSelectOptionText
+            )
+              <$> s.formSelectOptions
+          )
 renderFormField (SubmitButton button) =
   Html.button
     ! Attr.type_ "submit"

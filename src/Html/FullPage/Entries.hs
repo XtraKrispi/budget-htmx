@@ -49,4 +49,4 @@ render = Layout.withLayout EntriesR do
           ]
         $ do
           Html.div "New Entry"
-          Partial.newEntryForm
+          Partial.entryForm Nothing

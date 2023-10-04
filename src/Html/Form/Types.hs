@@ -16,11 +16,13 @@ data FormInput = FormInput
   , formInputLabel :: Html
   , formInputIsReadonly :: Bool
   , formInputIsRequired :: Bool
+  , formInputValue :: Maybe AttributeValue
   }
 
 data FormSelectOption = FormSelectOption
   { formSelectOptionText :: Html
   , formSelectOptionValue :: AttributeValue
+  , formSelectOptionSelected :: Bool
   }
 
 data FormSelect = FormSelect
