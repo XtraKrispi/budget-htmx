@@ -11,6 +11,9 @@ hxPost = customAttribute "hx-post"
 hxDelete :: AttributeValue -> Attribute
 hxDelete = customAttribute "hx-delete"
 
+hxPut :: AttributeValue -> Attribute
+hxPut = customAttribute "hx-put"
+
 hxSwap :: AttributeValue -> Attribute
 hxSwap = customAttribute "hx-swap"
 

@@ -37,7 +37,10 @@ render = Layout.withLayout EntriesR do
             $ spinner
       Html.div
         ! Utils.classes
-          [ "w-[45%]"
+          ["w-[45%]"]
+        $ Html.div
+        ! Utils.classes
+          [ "w-full"
           , "flex"
           , "flex-col"
           , "space-y-4"

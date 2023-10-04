@@ -25,6 +25,7 @@ data Frequency = OneTime | BiWeekly | Monthly
   deriving
     ( Show
     , Read
+    , Eq
     , Enum
     , Bounded
     )

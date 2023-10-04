@@ -5,12 +5,11 @@ import Data.Text.Format.Numbers (PrettyCfg (PrettyCfg), prettyF)
 import Data.Time.Format.ISO8601 (ISO8601 (iso8601Format), formatShow)
 import Database (Entry (..))
 import Database.Persist (Entity (..))
-import Database.Persist.Postgresql (fromSqlKey)
 import Html.Form (FormInput (..), FormSelect (..), FormSelectOption (..), FormSubmit (..), input, renderForm, select, submitButton)
 import Html.Utils qualified as Utils
 import Htmx.Attributes (hxDelete)
 import Htmx.Attributes qualified as Htmx
-import Text.Blaze.Html5 (Html, ToValue (toValue), stringValue, (!))
+import Text.Blaze.Html5 (Html, ToValue (toValue), stringValue, textValue, (!))
 import Text.Blaze.Html5 qualified as Html
 import Text.Blaze.Html5.Attributes qualified as Attr
 import Types (EntryType (..), Frequency (..), entryTypeDisplay, frequencyDisplay)
@@ -25,7 +24,15 @@ renderEntry (Entity key entry) = Html.li
     , "flex"
     , "flex-col"
     , "space-y-2"
+    , "hover:bg-gray-300"
+    , "hover:cursor-pointer"
     ]
+  ! Htmx.hxGet
+    ( "/partial/entries/"
+        <> Utils.keyAttribute key
+    )
+  ! Htmx.hxTarget "#entry-form"
+  ! Htmx.hxSwap "outerHTML"
   $ do
     Html.div ! Utils.classes ["flex", "justify-between"] $ do
       Html.span
@@ -46,7 +53,7 @@ renderEntry (Entity key entry) = Html.li
       Html.span $ Html.text $ frequencyDisplay entry.entryFrequency
       Html.span $ Html.text $ T.pack $ formatShow iso8601Format entry.entryStartDate
     Html.div $ do
-      Html.button ! hxDelete ("/partial/entries/" <> stringValue (show $ fromSqlKey key)) $ "Delete"
+      Html.button ! hxDelete ("/partial/entries/" <> Utils.keyAttribute key) $ "Delete"
 
 render :: [Entity Entry] -> Html
 render entries =
@@ -60,9 +67,15 @@ render entries =
     <$> entries
 
 entryForm :: Maybe (Entity Entry) -> Html
-entryForm _ =
+entryForm mEntry =
   renderForm
-    [Htmx.hxPost "/partial/entries", Htmx.hxSwap "outerHTML"]
+    [ maybe
+        (Htmx.hxPost "/partial/entries")
+        (\e -> Htmx.hxPut $ "/partial/entries/" <> Utils.keyAttribute (entityKey e))
+        mEntry
+    , Htmx.hxSwap "outerHTML"
+    , Attr.id "entry-form"
+    ]
     [ input
         ( FormInput
             { formInputInputType = "text"
@@ -71,7 +84,11 @@ entryForm _ =
             , formInputLabel = "Description"
             , formInputIsReadonly = False
             , formInputIsRequired = True
-            , formInputValue = Nothing
+            , formInputValue =
+                textValue
+                  . (.entryDescription)
+                  . entityVal
+                  <$> mEntry
             }
         )
     , input
@@ -82,7 +99,12 @@ entryForm _ =
             , formInputLabel = "Amount"
             , formInputIsReadonly = False
             , formInputIsRequired = True
-            , formInputValue = Nothing
+            , formInputValue =
+                stringValue
+                  . show
+                  . (.entryAmount)
+                  . entityVal
+                  <$> mEntry
             }
         )
     , input
@@ -93,7 +115,12 @@ entryForm _ =
             , formInputLabel = "Start Date"
             , formInputIsReadonly = False
             , formInputIsRequired = True
-            , formInputValue = Nothing
+            , formInputValue =
+                stringValue
+                  . formatShow iso8601Format
+                  . (.entryStartDate)
+                  . entityVal
+                  <$> mEntry
             }
         )
     , select
@@ -106,7 +133,7 @@ entryForm _ =
                     FormSelectOption
                       { formSelectOptionValue = toValue $ show f
                       , formSelectOptionText = frequencyDisplay f
-                      , formSelectOptionSelected = False
+                      , formSelectOptionSelected = maybe False ((== f) . (.entryFrequency) . entityVal) mEntry
                       }
                 )
                   <$> [OneTime .. Monthly]
@@ -122,7 +149,7 @@ entryForm _ =
                     FormSelectOption
                       { formSelectOptionValue = entryTypeDisplay e
                       , formSelectOptionText = entryTypeDisplay e
-                      , formSelectOptionSelected = False
+                      , formSelectOptionSelected = maybe False ((== e) . (.entryEntryType) . entityVal) mEntry
                       }
                 )
                   <$> [Expense, Payday]

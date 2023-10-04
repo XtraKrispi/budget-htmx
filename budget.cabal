@@ -51,6 +51,7 @@ executable budget
     , blaze-svg
     , bytestring
     , format-numbers
+    , http-types
     , monad-logger
     , mtl
     , persistent
