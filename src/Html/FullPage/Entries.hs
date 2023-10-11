@@ -28,7 +28,7 @@ render = Layout.withLayout EntriesR do
         ! Utils.classes ["w-[45%]"]
         ! Htmx.hxGet (partialRouteToPath EntriesP)
         ! Htmx.hxTarget "#entries"
-        ! Htmx.hxTrigger "load"
+        ! Htmx.hxTrigger "load, refreshEntries from:body"
         $ do
           Html.div
             ! Attr.id "entries"

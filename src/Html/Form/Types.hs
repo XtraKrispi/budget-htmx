@@ -1,13 +1,19 @@
 module Html.Form.Types where
 
-import Text.Blaze.Html5 (AttributeValue, Html)
+import Text.Blaze.Html5 (Attribute, AttributeValue, Html)
 
-type Form = [FormField]
+type Form = FormData
+
+data FormData
+  = HBox [FormData]
+  | VBox [FormData]
+  | Field FormField
 
 data FormField
   = Input FormInput
   | Select FormSelect
-  | SubmitButton FormSubmit
+  | SubmitButton FormButton
+  | OtherButton FormButton
 
 data FormInput = FormInput
   { formInputInputType :: AttributeValue
@@ -32,16 +38,20 @@ data FormSelect = FormSelect
   , formSelectOptions :: [FormSelectOption]
   }
 
-data FormSubmit = FormSubmit
-  { formSubmitLabel :: Html
-  , formSubmitIsDisabled :: Bool
+data FormButton = FormButton
+  { formButtonLabel :: Html
+  , formButtonIsDisabled :: Bool
+  , formButtonAttribute :: Attribute
   }
 
-input :: FormInput -> FormField
-input = Input
+input :: FormInput -> FormData
+input = Field . Input
 
-select :: FormSelect -> FormField
-select = Select
+select :: FormSelect -> FormData
+select = Field . Select
 
-submitButton :: FormSubmit -> FormField
-submitButton = SubmitButton
+submitButton :: FormButton -> FormData
+submitButton = Field . SubmitButton
+
+otherButton :: FormButton -> FormData
+otherButton = Field . OtherButton

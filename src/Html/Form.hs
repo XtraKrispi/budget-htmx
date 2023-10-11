@@ -6,11 +6,12 @@ module Html.Form (
 import Html.Form.Rendering
 import Html.Form.Types (
   Form,
+  FormButton (..),
   FormInput (..),
   FormSelect (..),
   FormSelectOption (..),
-  FormSubmit (..),
   input,
+  otherButton,
   select,
   submitButton,
  )

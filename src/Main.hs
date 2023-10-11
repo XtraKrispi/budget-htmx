@@ -6,7 +6,6 @@ import Control.Monad.Trans (MonadIO (..), lift)
 import Control.Monad.Trans.Reader (ReaderT (runReaderT))
 import Data.ByteString.Char8 qualified as BS
 import Data.Text.Internal.Lazy (Text)
-import Data.Time (Day, defaultTimeLocale, parseTimeM)
 import DataAccess (runDbAction)
 import Database (Entry (..), migrateAll)
 import Database.Persist.Postgresql (runMigration, toSqlKey)
@@ -19,6 +18,7 @@ import Network.Wai.Middleware.Static (addBase, staticPolicy)
 import System.Environment (lookupEnv)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Types (Env (..))
+import Utils qualified
 import Web.Scotty.Trans (
   ScottyT,
   delete,
@@ -28,6 +28,7 @@ import Web.Scotty.Trans (
   param,
   post,
   scottyT,
+  setHeader,
   status,
  )
 
@@ -54,14 +55,14 @@ partials = do
     maybe (status status404) (html . renderHtml . Partial.Entries.entryForm . Just) mEntry
   delete "/partial/entries/:id" do
     entries <- lift getEntries
-    html $ renderHtml $ Partial.Entries.render entries
+    html $ renderHtml (Partial.Entries.render entries)
   post "/partial/entries" do
     liftIO $ putStrLn "Here!"
     description <- param "new-description"
     amount <- param "new-amount"
     frequency <- param "new-frequency"
     entryType <- param "new-entry-type"
-    startDate :: Maybe Day <- parseTimeM True defaultTimeLocale "%Y-%-m-%-d" <$> param "new-start-date"
+    startDate <- Utils.parseDate <$> param "new-start-date"
     -- Need to do validation for all params
     case startDate of
       Nothing -> pure ()
@@ -69,9 +70,8 @@ partials = do
         let entry = Entry description amount d frequency entryType False
         _ <- lift $ newEntry entry
         pure ()
-    entries <- lift getEntries
-    -- Want to do an out of band swap here for the entries list
-    html $ renderHtml (Partial.Entries.entryForm Nothing) <> renderHtml (Partial.Entries.render entries)
+    setHeader "HX-Trigger" "refreshEntries"
+    html $ renderHtml (Partial.Entries.entryForm Nothing)
 
 main :: IO ()
 main = do

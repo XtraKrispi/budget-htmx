@@ -3,11 +3,12 @@ module Html.Form.Rendering where
 import Data.Maybe (fromMaybe, isJust)
 import Html.Form.Types (
   Form,
+  FormButton (..),
+  FormData (..),
   FormField (..),
   FormInput (..),
   FormSelect (..),
   FormSelectOption (..),
-  FormSubmit (..),
  )
 import Html.Utils qualified as Utils
 import Text.Blaze.Html5 (Attribute, Html, (!), (!?))
@@ -20,7 +21,25 @@ renderForm attrs form =
     $ Html.form
     $ Html.div
     ! Utils.classes ["flex", "flex-col", "space-y-6"]
-    $ mconcat (renderFormField <$> form)
+    $ renderFormData form
+
+renderFormData :: FormData -> Html
+renderFormData (Field formField) = renderFormField formField
+renderFormData (HBox hs) =
+  Html.div
+    ! Utils.classes
+      [ "flex"
+      , "space-x-4"
+      ]
+    $ mconcat (renderFormData <$> hs)
+renderFormData (VBox vs) =
+  Html.div
+    ! Utils.classes
+      [ "flex"
+      , "flex-col"
+      , "space-y-4"
+      ]
+    $ mconcat (renderFormData <$> vs)
 
 renderFormField :: FormField -> Html
 renderFormField (Input formInput) =
@@ -119,13 +138,44 @@ renderFormField (Select s) =
 renderFormField (SubmitButton button) =
   Html.button
     ! Attr.type_ "submit"
-    !? (button.formSubmitIsDisabled, Attr.disabled "disabled")
+    !? (button.formButtonIsDisabled, Attr.disabled "disabled")
     ! Utils.classes
-      [ "p-2"
-      , "bg-blue-800"
-      , "text-white"
-      , "rounded-md"
-      , "transition-colors"
-      , "hover:bg-blue-600"
+      [ "text-white"
+      , "bg-blue-700"
+      , "hover:bg-blue-800"
+      , "focus:ring-4"
+      , "focus:ring-blue-300"
+      , "font-medium"
+      , "rounded-lg"
+      , "text-sm"
+      , "px-5"
+      , "py-2.5"
+      , "mr-2"
+      , "mb-2"
+      , "focus:outline-none"
       ]
-    $ button.formSubmitLabel
+    $ button.formButtonLabel
+renderFormField (OtherButton button) =
+  Html.button
+    ! Attr.type_ "button"
+    !? (button.formButtonIsDisabled, Attr.disabled "disabled")
+    ! Utils.classes
+      [ "py-2.5"
+      , "px-5"
+      , "mr-2"
+      , "mb-2"
+      , "text-sm"
+      , "font-medium"
+      , "text-gray-900"
+      , "focus:outline-none"
+      , "bg-white"
+      , "rounded-lg"
+      , "border"
+      , "border-gray-200"
+      , "hover:bg-gray-100"
+      , "hover:text-blue-700"
+      , "focus:z-10"
+      , "focus:ring-4"
+      , "focus:ring-gray-200"
+      ]
+    $ button.formButtonLabel

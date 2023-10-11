@@ -39,6 +39,7 @@ executable budget
       Htmx.Attributes
       Route
       Types
+      Utils
       Paths_budget
   hs-source-dirs:
       src
