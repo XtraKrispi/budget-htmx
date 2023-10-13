@@ -2,6 +2,7 @@
 
 module Types where
 
+import Data.Int (Int64)
 import Data.String (IsString)
 import Data.Text (Text)
 import Data.Text.Internal.Lazy qualified as Lazy
@@ -70,5 +71,6 @@ data Instance = Instance
   , instanceDate :: Day
   , instanceFrequency :: Frequency
   , instanceEntryType :: EntryType
+  , instanceEntryId :: Int64
   }
   deriving (Show)

@@ -1,12 +1,25 @@
 module BusinessLogic where
 
+import Data.Function (on)
+import Data.List (sortBy)
 import Data.Time (Day, addGregorianMonthsClip)
 import Data.Time.Calendar (addDays)
-import Database (Entry (..))
-import Types (Frequency (..), Instance (..))
+import Database (Archive (..), Entry (..))
+import Database.Persist.Postgresql (Entity (..), fromSqlKey, toSqlKey)
+import Types (EntryType (..), Frequency (..), Instance (..))
+import Utils qualified
 
-extractInstances :: Entry -> [Instance]
-extractInstances entry =
+getApplicableInstances :: Day -> [Entity Entry] -> [Entity Archive] -> [Instance]
+getApplicableInstances today entries archive = do
+  let
+    instances =
+      sortBy (compare `on` (.instanceDate))
+        $ concatMap (takeWhile ((<= addDays 28 today) . (.instanceDate)) . extractInstances) entries
+   in
+    filter (\i -> all (\(Entity _ a) -> toSqlKey i.instanceEntryId /= a.archiveOriginalEntryId && i.instanceDate /= a.archiveDate) archive) $ Utils.takeWhileInclusive ((/= Payday) . (.instanceEntryType)) instances
+
+extractInstances :: Entity Entry -> [Instance]
+extractInstances (Entity key entry) =
   ( \d ->
       Instance
         { instanceDescription = entry.entryDescription
@@ -14,6 +27,7 @@ extractInstances entry =
         , instanceDate = d
         , instanceFrequency = entry.entryFrequency
         , instanceEntryType = entry.entryEntryType
+        , instanceEntryId = fromSqlKey key
         }
   )
     <$> getDates entry.entryStartDate entry.entryFrequency

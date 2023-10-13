@@ -1,6 +1,7 @@
 module Htmx.Attributes where
 
-import Text.Blaze.Html5 (Attribute, AttributeValue, customAttribute)
+import Data.Text (Text, intercalate)
+import Text.Blaze.Html5 (Attribute, AttributeValue, ToValue (toValue), customAttribute)
 
 hxGet :: AttributeValue -> Attribute
 hxGet = customAttribute "hx-get"
@@ -25,3 +26,6 @@ hxTarget = customAttribute "hx-target"
 
 hxSwapOob :: Attribute
 hxSwapOob = customAttribute "hx-swap-oob" "true"
+
+hxVals :: [(Text, Text)] -> Attribute
+hxVals vals = customAttribute "hx-vals" $ toValue $ (\t -> "{" <> t <> "}") $ intercalate "," $ (\(key, val) -> "\"" <> key <> "\":" <> "\"" <> val <> "\"") <$> vals

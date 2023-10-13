@@ -2,7 +2,7 @@ module Route (Route (..), PartialRoute (..), partialRouteToPath, routeToPath) wh
 
 import Data.String (IsString)
 
-data PartialRoute = EntriesP
+data PartialRoute = EntriesP | InstancesP | ScratchP | ArchiveP
   deriving (Eq, Enum, Bounded)
 
 data Route = HomeR | EntriesR | ArchiveR
@@ -20,3 +20,6 @@ routeToPath ArchiveR = "/archive"
 
 partialRouteToPath :: (IsString s) => PartialRoute -> s
 partialRouteToPath EntriesP = "/partial/entries"
+partialRouteToPath InstancesP = "/partial/instances"
+partialRouteToPath ScratchP = "/partial/scratch"
+partialRouteToPath ArchiveP = "/partial/archive"

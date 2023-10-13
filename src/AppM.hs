@@ -1,13 +1,13 @@
 module AppM where
 
-import Capability (Calendar (today), GetEntry (..), WriteEntry (..))
+import Capability (Calendar (today), GetArchive (..), GetEntry (..), WriteArchive (..), WriteEntry (..))
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.IO.Unlift (MonadUnliftIO)
 import Control.Monad.Reader (MonadReader, ReaderT)
 import Data.Time (Day, UTCTime (utctDay), getCurrentTime)
 import DataAccess (runDbAction)
-import Database (EntityField (EntryDescription), Entry, EntryId, Key)
-import Database.Persist (Entity, SelectOpt (Asc), getEntity, insert, selectList)
+import Database (Archive, ArchiveId, EntityField (EntryDescription), Entry, EntryId, Key)
+import Database.Persist (Entity, SelectOpt (Asc), getEntity, insert, replace, selectList)
 import Types (Env)
 
 newtype AppM a = App {unApp :: ReaderT Env IO a}
@@ -34,3 +34,14 @@ instance GetEntry AppM where
 instance WriteEntry AppM where
   newEntry :: Entry -> AppM EntryId
   newEntry = runDbAction . insert
+
+  updateEntry :: EntryId -> Entry -> AppM ()
+  updateEntry entryId = runDbAction . replace entryId
+
+instance WriteArchive AppM where
+  newArchive :: Archive -> AppM ArchiveId
+  newArchive = runDbAction . insert
+
+instance GetArchive AppM where
+  getArchive :: AppM [Entity Archive]
+  getArchive = runDbAction $ selectList [] []

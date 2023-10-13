@@ -70,7 +70,7 @@ renderEntry (Entity key entry) = Html.li
           , "mb-2"
           , "transition-colors"
           ]
-        ! Htmx.hxDelete ("/partial/entries/" <> Html.Utils.keyAttribute key)
+        ! Htmx.hxDelete ("/entries/" <> Html.Utils.keyAttribute key)
         ! Htmx.hxTrigger "click consume"
         ! Htmx.hxTarget "#entries"
         $ "Delete"
@@ -89,8 +89,8 @@ entryForm :: Maybe (Entity Entry) -> Html
 entryForm mEntry =
   renderForm
     [ maybe
-        (Htmx.hxPost "/partial/entries")
-        (\e -> Htmx.hxPut $ "/partial/entries/" <> Html.Utils.keyAttribute (entityKey e))
+        (Htmx.hxPost "/entries")
+        (\e -> Htmx.hxPut $ "/entries/" <> Html.Utils.keyAttribute (entityKey e))
         mEntry
     , Htmx.hxSwap "outerHTML"
     , Attr.id "entry-form"
@@ -177,7 +177,7 @@ entryForm mEntry =
             )
         , HBox
             [ submitButton (FormButton "Save" False mempty)
-            , otherButton (FormButton "Clear" False mempty)
+            , otherButton (FormButton "Clear" False (Htmx.hxGet "/partial/entries/new-form" <> Htmx.hxTarget "#entry-form"))
             ]
         ]
     )

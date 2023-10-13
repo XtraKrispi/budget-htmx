@@ -34,7 +34,10 @@ executable budget
       Html.FullPage.Entries
       Html.FullPage.Home
       Html.Layout
+      Html.Partials.Archive
       Html.Partials.Entries
+      Html.Partials.Instances
+      Html.Partials.Scratch
       Html.Utils
       Htmx.Attributes
       Route

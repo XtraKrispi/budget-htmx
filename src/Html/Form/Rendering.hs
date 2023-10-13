@@ -139,6 +139,7 @@ renderFormField (SubmitButton button) =
   Html.button
     ! Attr.type_ "submit"
     !? (button.formButtonIsDisabled, Attr.disabled "disabled")
+    ! button.formButtonAttribute
     ! Utils.classes
       [ "text-white"
       , "bg-blue-700"
@@ -153,12 +154,14 @@ renderFormField (SubmitButton button) =
       , "mr-2"
       , "mb-2"
       , "focus:outline-none"
+      , "transition-colors"
       ]
     $ button.formButtonLabel
 renderFormField (OtherButton button) =
   Html.button
     ! Attr.type_ "button"
     !? (button.formButtonIsDisabled, Attr.disabled "disabled")
+    ! button.formButtonAttribute
     ! Utils.classes
       [ "py-2.5"
       , "px-5"
@@ -177,5 +180,6 @@ renderFormField (OtherButton button) =
       , "focus:z-10"
       , "focus:ring-4"
       , "focus:ring-gray-200"
+      , "transition-colors"
       ]
     $ button.formButtonLabel
