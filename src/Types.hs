@@ -60,7 +60,7 @@ entryTypeDisplay :: (IsString a) => EntryType -> a
 entryTypeDisplay Payday = "Payday"
 entryTypeDisplay Expense = "Expense"
 
-data ArchiveAction = Completed | Skipped
+data ArchiveAction = Paid | Skipped
   deriving (Show, Read)
 
 derivePersistField "ArchiveAction"

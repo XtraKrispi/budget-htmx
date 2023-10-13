@@ -6,7 +6,7 @@ import Html.Utils qualified
 import Htmx.Attributes qualified as Htmx
 import Text.Blaze.Html5 (Html, (!))
 import Text.Blaze.Html5 qualified as Html
-import Types (ArchiveAction (Skipped), EntryType (..), Instance (..), frequencyDisplay)
+import Types (ArchiveAction (Paid, Skipped), EntryType (..), Instance (..), frequencyDisplay)
 import Utils qualified
 
 render :: [Instance] -> Html
@@ -66,6 +66,12 @@ renderInstance i = Html.li
               , "mb-2"
               , "focus:outline-none"
               , "transition-colors"
+              ]
+            ! Htmx.hxPost "/archive"
+            ! Htmx.hxVals
+              [ ("entryId", Utils.tShow i.instanceEntryId)
+              , ("action", Utils.tShow Paid)
+              , ("date", T.pack $ Utils.formatDate i.instanceDate)
               ]
             $ "Pay"
       if i.instanceEntryType == Payday
